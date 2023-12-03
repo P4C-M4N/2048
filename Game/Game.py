@@ -1,6 +1,6 @@
 import random as r
 import keyboard as k
- 
+import time as t
 
 def afficherGrille(grille):
     global score
@@ -23,7 +23,12 @@ def ajoutNombreAleatoire(grille):
     return grille
 
 def creerGrilleTempo():
-    grilleTempo = [[-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1],[-1, -1, -1, -1]]
+    grilleTempo = [
+        [-1, -1, -1, -1], 
+        [-1, -1, -1, -1], 
+        [-1, -1, -1, -1],
+        [-1, -1, -1, -1]
+    ]
     return grilleTempo
 
 
@@ -45,8 +50,7 @@ def retirerZeroDroite(grille):
               idColonne -= 1
   return grilleTempo
 
-def deplacementDroite(grille):
-    global score
+def deplacementDroite(grille, score):
     grille = retirerZeroDroite(grille)
     for ligne in range(0, 4):
         for colonne in range(3, 0, -1):
@@ -56,7 +60,7 @@ def deplacementDroite(grille):
                 grille[ligne][colonne - 1] = 0
     grille = retirerZeroDroite(grille)
     grille = remplirZero(grille)
-    return grille
+    return grille, score
 
 def retirerZeroHaut(grille):
   grilleTempo = creerGrilleTempo()
@@ -68,8 +72,7 @@ def retirerZeroHaut(grille):
               idLigne += 1
   return grilleTempo
 
-def deplacementHaut(grille):
-    global score
+def deplacementHaut(grille, score):
     grille = retirerZeroHaut(grille)
     for colonne in range(0, 4):
         for ligne in range(0, 3):
@@ -79,7 +82,7 @@ def deplacementHaut(grille):
                 grille[ligne + 1][colonne] = 0
     grille = retirerZeroHaut(grille)
     grille = remplirZero(grille)
-    return grille
+    return grille, score
 
 
 def retirerZeroBas(grille):
@@ -92,8 +95,7 @@ def retirerZeroBas(grille):
               idLigne -= 1
   return grilleTempo
 
-def deplacementBas(grille):
-    global score
+def deplacementBas(grille, score):
     grille = retirerZeroBas(grille)
     for colonne in range(0, 4):
         for ligne in range(3, 0, -1):
@@ -103,7 +105,7 @@ def deplacementBas(grille):
                 grille[ligne - 1][colonne] = 0
     grille = retirerZeroBas(grille)
     grille = remplirZero(grille)
-    return grille
+    return grille, score
 
 def retirerZeroGauche(grille):
     grilleTempo = creerGrilleTempo()
@@ -115,8 +117,7 @@ def retirerZeroGauche(grille):
                 idColonne += 1
     return grilleTempo
 
-def deplacementGauche(grille):
-    global score
+def deplacementGauche(grille, score):
     grille = retirerZeroGauche(grille)
     for ligne in range(0, 4):
         for colonne in range(0, 3):
@@ -126,7 +127,27 @@ def deplacementGauche(grille):
                 grille[ligne][colonne+1] = 0
     grille = retirerZeroGauche(grille)
     grille = remplirZero(grille)
-    return grille
+    return grille, score
+
+
+def calculMeilleurCoup(grille, score):
+    grilleGauche, grilleDroite, grilleHaut, grilleBas = grille,grille,grille,grille
+    scoreGauche, scoreDroite, scoreHaut, scoreBas = score,score,score,score
+    grilleGauche, scoreGauche = deplacementGauche(grilleGauche, scoreGauche)
+    grilleDroite, scoreDroite = deplacementDroite(grilleDroite, scoreDroite)
+    grilleBas, scoreBas = deplacementBas(grilleBas, scoreBas)
+    grilleHaut, scoreHaut = deplacementHaut(grilleHaut, scoreHaut)
+    meilleurCoup = max(scoreGauche, scoreDroite, scoreHaut, scoreBas)
+    print("Le meilleur coup est : ", meilleurCoup)
+    if scoreDroite == meilleurCoup:
+        return 'droite'
+    elif scoreGauche == meilleurCoup:
+        return 'gauche'
+    elif scoreBas == meilleurCoup:
+        return 'bas'
+    elif scoreHaut == meilleurCoup:
+        return 'haut'
+    return 'haut'
 
 def lancerJeu():
     global score
@@ -143,28 +164,22 @@ def lancerJeu():
     print("Appuyer sur 'a' pour quitter")
 
     afficherGrille(grille)
-
     while True:
-        saisie = input("Entrez votre choix: ")
+        prochainCoup = calculMeilleurCoup(grille, score)
+        if prochainCoup == 'droite':
+            grille, score = deplacementDroite(grille, score)
+            ajoutNombreAleatoire(grille)
+        elif prochainCoup == 'gauche':
+            grille, score = deplacementGauche(grille, score)
+            ajoutNombreAleatoire(grille)
+        elif prochainCoup == 'bas':
+            grille, score = deplacementBas(grille, score)
+            ajoutNombreAleatoire(grille)
+        elif prochainCoup == 'haut':
+            grille, score = deplacementHaut(grille, score)
+            ajoutNombreAleatoire(grille)
+        afficherGrille(grille)
+        t.sleep(0.2)
 
-        if saisie == 'a':
-            print("Fin du jeu.")
-            break
-        elif saisie == 'g':
-            grille = deplacementGauche(grille)
-            grille = ajoutNombreAleatoire(grille)
-            afficherGrille(grille)
-        elif saisie == 'd':
-            grille = deplacementDroite(grille)
-            grille = ajoutNombreAleatoire(grille)
-            afficherGrille(grille)
-        elif saisie == 'h':
-            grille = deplacementHaut(grille)
-            grille = ajoutNombreAleatoire(grille)
-            afficherGrille(grille)
-        elif saisie == 'b':
-            grille = deplacementBas(grille)
-            grille = ajoutNombreAleatoire(grille)
-            afficherGrille(grille)
 score = 0
 lancerJeu()
