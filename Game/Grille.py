@@ -29,8 +29,6 @@ class Grille:
         if celluleVide:
             i, j = random.choice(celluleVide)
             self.grille[i][j] = random.choice([2, 2, 2, 4])
-        else:
-            print("Game Over")
     
     def ecrasementCellules(self, ligne):
         temp_ligne = [val for val in ligne if val != 0]
@@ -77,4 +75,27 @@ class Grille:
         self.ajoutNombreAleatoire()
             
     
-    
+    def deplacementAutorise(self, move):
+        print("Mouvement envisagé :", move)
+        grilleTempo = [row[:] for row in self.grille]
+        
+        if move == 'g':
+            self.deplacementGauche()
+        elif move == 'd':
+            self.deplacementDroite()
+        elif move == 'h':
+            self.deplacementHaut()
+        elif move == 'b':
+            self.deplacementBas()
+        else:
+            print("Mouvement interdit")
+            self.grille = [row[:] for row in grilleTempo]
+            return False
+        
+        if grilleTempo == self.grille:
+            print("Mouvement interdit")
+            self.grille = [row[:] for row in grilleTempo]
+            return False
+        
+        print("Mouvement autorisé")
+        return True

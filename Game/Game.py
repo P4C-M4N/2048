@@ -18,21 +18,26 @@ class Game:
         while True:
             move = input("Entrez la direction (g, h, d, b) ou 'a' pour quitter: ")
 
-            if move == 'g':
-                self.grille.deplacementGauche()
-            elif move == 'd':
-                self.grille.deplacementDroite()
-            elif move == 'h':
-                self.grille.deplacementHaut()
-            elif move == 'b':
-                self.grille.deplacementBas()
-            elif move == 'a':
+
+
+            if move == 'a':
                 break
+
+            if self.grille.deplacementAutorise(move):
+                if move == 'g':
+                    self.grille.deplacementGauche()
+                elif move == 'd':
+                    self.grille.deplacementDroite()
+                elif move == 'h':
+                    self.grille.deplacementHaut()
+                elif move == 'b':
+                    self.grille.deplacementBas()
+                self.grille.afficher()
+                t.sleep(0.2)
+
             else:
-                print("Direction invalide. Utilisez 'g', 'h', 'd' ou 'b'.")
-                continue
-            self.grille.afficher()
-            t.sleep(0.2)
-        print("Game Over")
+                if self.grille.deplacementAutorise('g') == False and self.grille.deplacementAutorise('d') == False and self.grille.deplacementAutorise('b') == False and self.grille.deplacementAutorise('h') == False:
+                    print("Partie terminée, score final : ", self.grille.score)
+                    break
+            
         print("Score total : ", self.grille.score)
-    
