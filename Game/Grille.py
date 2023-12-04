@@ -31,7 +31,6 @@ class Grille:
             i, j = random.choice(celluleVide)
             val = random.choice([2, 2, 2, 4])
             self.grille[i][j] = val
-            print(val)
     
     def ecrasementCellules(self, ligne):
         temp_ligne = [val for val in ligne if val != 0]

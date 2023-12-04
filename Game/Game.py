@@ -13,7 +13,7 @@ class Game:
     def start(self):
         print("Jeu du 2048 : ")
         print("Utiliser les touches 'g' (gauche), 'h' (haut), 'd' (droite), 'b' (bas) pour jouer")
-        print("Appuyer sur 'a' pour quitter")
+        print("Appuyer sur 'q' pour quitter")
         self.grille.afficher()
         while self.grille.isNotFull():
             move = input("Entrez la direction (g, h, d, b) ou 'a' pour quitter: ")

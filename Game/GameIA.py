@@ -1,12 +1,14 @@
 from Grille import Grille
+from ia import Ia
 
-class Game:
+class GameIA:
     grille = Grille()
-    Ia = Ia(grille)
     
     def __init__(self):
+        self.grille = Grille()
         self.grille.ajoutNombreAleatoire()
         self.grille.ajoutNombreAleatoire()
+        self.ia = Ia(self.grille)
     
     
     def start(self):
@@ -14,7 +16,8 @@ class Game:
         print("IA Jeux")
         self.grille.afficher()
         while self.grille.isNotFull():
-            move = self.ia.MeilleurCoup()
+            move = self.ia.calculMeilleurCoup()
+            print(move)
             if self.grille.TryDeplacement(move):
                 self.grille.ajoutNombreAleatoire()
                 self.grille.afficher()
