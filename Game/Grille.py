@@ -1,3 +1,4 @@
+import copy
 import random
 
 class Grille:
@@ -28,17 +29,27 @@ class Grille:
         celluleVide = [(i, j) for i in range(4) for j in range(4) if self.grille[i][j] == 0]
         if celluleVide:
             i, j = random.choice(celluleVide)
-            self.grille[i][j] = random.choice([2, 2, 2, 4])
+            val = random.choice([2, 2, 2, 4])
+            self.grille[i][j] = val
+            print(val)
     
     def ecrasementCellules(self, ligne):
         temp_ligne = [val for val in ligne if val != 0]
+
         for i in range(len(temp_ligne) - 1):
             if temp_ligne[i] == temp_ligne[i + 1]:
                 temp_ligne[i] *= 2
                 self.score += temp_ligne[i]
                 temp_ligne[i + 1] = 0
-        temp_ligne = [val for val in temp_ligne if val != 0] + [0] * (4 - len(temp_ligne))
+
+        # Filtrez à nouveau les zéros après l'écrasement
+        temp_ligne = [val for val in temp_ligne if val != 0]
+
+        # Ajoutez des zéros pour compléter la ligne
+        temp_ligne += [0] * (4 - len(temp_ligne))
+
         return temp_ligne
+
     
     def deplacementHaut(self):
         for j in range(4):
@@ -46,7 +57,7 @@ class Grille:
             colEcrase = self.ecrasementCellules(col)
             for i in range(len(colEcrase)):
                 self.grille[i][j] = colEcrase[i]
-        self.ajoutNombreAleatoire()
+        
     
     def deplacementBas(self):
         for j in range(4):
@@ -54,7 +65,7 @@ class Grille:
             colEcrase = self.ecrasementCellules(col)
             for i in range(len(colEcrase)):
                 self.grille[3 - i][j] = colEcrase[i]
-        self.ajoutNombreAleatoire()
+        
 
     
     def deplacementGauche(self):
@@ -63,7 +74,7 @@ class Grille:
             ligneEcrasee = self.ecrasementCellules(ligne)
             for j in range(len(ligneEcrasee)):
                 self.grille[i][j] = ligneEcrasee[j]
-        self.ajoutNombreAleatoire()
+        
 
     
     def deplacementDroite(self):
@@ -72,30 +83,42 @@ class Grille:
             ligneEcrasee = self.ecrasementCellules(ligne)
             for j in range(len(ligneEcrasee)):
                 self.grille[i][3 - j] = ligneEcrasee[j]
-        self.ajoutNombreAleatoire()
-            
+        
+        
+    def TryDeplacement(self, move):
+        print("Mouvement envisagé :", move)
+        if self.deplacementAutorise(move):
+            print("mouvement ok")
+            if move == 'g':
+                self.deplacementGauche()
+            elif move == 'd':
+                self.deplacementDroite()
+            elif move == 'h':
+                self.deplacementHaut()
+            elif move == 'b':
+                self.deplacementBas()
+            return True
+        else :
+            print("mouvement interdit")  
+            return False
     
     def deplacementAutorise(self, move):
-        print("Mouvement envisagé :", move)
-        grilleTempo = [row[:] for row in self.grille]
-        
+        grilleTempo = Grille()
+        grilleTempo.grille = copy.deepcopy(self.grille)
+
         if move == 'g':
-            self.deplacementGauche()
+            grilleTempo.deplacementGauche()
         elif move == 'd':
-            self.deplacementDroite()
+            grilleTempo.deplacementDroite()
         elif move == 'h':
-            self.deplacementHaut()
+            grilleTempo.deplacementHaut()
         elif move == 'b':
-            self.deplacementBas()
+            grilleTempo.deplacementBas()
         else:
-            print("Mouvement interdit")
-            self.grille = [row[:] for row in grilleTempo]
             return False
-        
-        if grilleTempo == self.grille:
-            print("Mouvement interdit")
-            self.grille = [row[:] for row in grilleTempo]
-            return False
-        
-        print("Mouvement autorisé")
-        return True
+
+        return grilleTempo.grille != self.grille  
+
+    
+    def isNotFull(self):
+       return (self.deplacementAutorise('g') or self.deplacementAutorise('d') or self.deplacementAutorise('h') or self.deplacementAutorise('b'))
