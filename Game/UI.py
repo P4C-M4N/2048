@@ -88,8 +88,10 @@ def test() :
     pygame.display.update()
     move = None
     global grille
-    while grille.isNotFull():
-        time.sleep(0.01)
+    global ia
+    restrart = True
+    while restrart :
+        #time.sleep(0.0000001)
         if grille.isNotFull():
             print("IA")
             move = ia.calculMeilleurCoup()
@@ -98,10 +100,25 @@ def test() :
                 grille.ajoutNombreAleatoire()
             dessiner_grille()
             pygame.display.update()
+            #S'il la grille contient un 1024 on écrir la grille dans un fichier
+            #D'abord on recherche si la grille contient un 1024
+            for i in range(4):
+                for j in range(4):
+                    if grille.grille[i][j] == 4096:
+                        #On ouvre le fichier en mode append
+                        fichier = open("grille.txt", "a")
+                        #On écrit la grille dans le fichier
+                        fichier.write(str(grille.grille))
+                        #On ferme le fichier
+                        fichier.close()
+                        restrart = False
         else :
             print("Game Over")
             print("Score total : ", grille.score)
             grille = Grille()
+            ia = Ia(grille)
+            dessiner_grille()
+            pygame.display.update()
         
         
 
@@ -166,6 +183,7 @@ while True:
             thread.start()
             print("finish")
             thread.join()
+            print("join")
             
 
     # Dessiner la grille ou les boutons selon le mode

@@ -2,53 +2,74 @@ from Grille import Grille
 import copy
 
 class Ia:
-    grille = Grille()
     def __init__(self, grille):
         self.grille = grille
 
+    def pointsPourCasesVides(self, grille):
+        casesVides = sum(1 for ligne in grille for case in ligne if case == 0)
+        return casesVides * 10
+
+    def pointsPourCoin(self, grille):
+        # Encourage à garder les valeurs élevées dans un coin spécifique, par exemple le coin supérieur gauche
+        return grille[0][0] * 50
+
+    def evaluationGrille(self, grille):
+        scoreEvaluation = 0
+        tailleGrille = len(grille)
+        for i in range(tailleGrille):
+            for j in range(tailleGrille):
+                valeurCase = grille[i][j]
+                # Plus la valeur est élevée et proche du coin, plus le score est élevé
+                scoreProximite = (tailleGrille - i) * (tailleGrille - j)
+                scoreEvaluation += valeurCase * scoreProximite
+
+                # Encourage les valeurs adjacentes similaires
+                if j < tailleGrille - 1:
+                    scoreEvaluation -= abs(valeurCase - grille[i][j + 1])
+                if i < tailleGrille - 1:
+                    scoreEvaluation -= abs(valeurCase - grille[i + 1][j])
+        return scoreEvaluation
+
+    def calculMeilleurCoupProfondeur(self, grille, profondeur):
+        if profondeur == 0:
+            return self.evaluationGrille(grille.grille) + self.pointsPourCoin(grille.grille) + self.pointsPourCasesVides(grille.grille)
+
+        meilleursScores = []
+        for direction in ['d', 'g', 'b', 'h']:
+            grilleCopie = Grille()
+            grilleCopie.grille = copy.deepcopy(grille.grille)
+            grilleCopie.score = copy.deepcopy(grille.score)
+
+            if grilleCopie.TryDeplacement(direction):
+                scoreFutur = self.calculMeilleurCoupProfondeur(grilleCopie, profondeur - 1)
+                scoreEvaluation = self.evaluationGrille(grilleCopie.grille)
+                pointsCoin = self.pointsPourCoin(grilleCopie.grille)
+                pointsCaseVide = self.pointsPourCasesVides(grilleCopie.grille)
+                scoreTotal = grilleCopie.score + scoreFutur + scoreEvaluation + pointsCoin + pointsCaseVide
+                meilleursScores.append(scoreTotal)
+
+        return max(meilleursScores) if meilleursScores else -1
 
     def calculMeilleurCoup(self):
-        grilleDroite = Grille()
-        grilleDroite.grille = copy.deepcopy(self.grille.grille)
-        grilleDroite.score = copy.deepcopy(self.grille.score)
-        verifDroite = grilleDroite.TryDeplacement('d')
+        grilles = {}
+        for direction in ['d', 'g', 'b', 'h']:
+            grilleCopie = Grille()
+            grilleCopie.grille = copy.deepcopy(self.grille.grille)
+            grilleCopie.score = copy.deepcopy(self.grille.score)
+            if grilleCopie.TryDeplacement(direction):
+                grilles[direction] = grilleCopie
 
-        grilleGauche = Grille()
-        grilleGauche.grille = copy.deepcopy(self.grille.grille)
-        grilleGauche.score = copy.deepcopy(self.grille.score)
-        verifGauche = grilleGauche.TryDeplacement('g')
+        return self.meilleurSituation(grilles)
 
-        grilleBas = Grille()
-        grilleBas.grille = copy.deepcopy(self.grille.grille)
-        grilleBas.score = copy.deepcopy(self.grille.score)
-        verifBas = grilleBas.TryDeplacement('b')
+    def meilleurSituation(self, grilles):
+        scores = {}
+        for direction, grille in grilles.items():
+            scoreBase = grille.score
+            scoreEvaluation = self.evaluationGrille(grille.grille)
+            pointsCoin = self.pointsPourCoin(grille.grille)
+            scoreProfondeur = self.calculMeilleurCoupProfondeur(grille, 2)
+            pointsCaseVide = self.pointsPourCasesVides(grille.grille)
+            scoreTotal = scoreBase + scoreEvaluation + pointsCoin + scoreProfondeur + pointsCaseVide
+            scores[direction] = scoreTotal
 
-        grilleHaut = Grille()
-        grilleHaut.grille = copy.deepcopy(self.grille.grille)
-        grilleHaut.score = copy.deepcopy(self.grille.score)
-        verifHaut = grilleHaut.TryDeplacement('h')
-
-        return self.meilleurSituation((grilleDroite,verifDroite), (grilleGauche,verifGauche), (grilleBas,verifBas), (grilleHaut,verifHaut))
-        
-        
-
-    def meilleurSituation(self, EnsemblegrilleDroite, EnsemblegrilleGauche, EnsemblegrilleBas, EnsemblegrilleHaut):
-        scores = {
-            "d": EnsemblegrilleDroite[0].score if EnsemblegrilleDroite[1] else -1,
-            "g": EnsemblegrilleGauche[0].score if EnsemblegrilleGauche[1] else -1,
-            "b": EnsemblegrilleBas[0].score if EnsemblegrilleBas[1] else -1,
-            "h": EnsemblegrilleHaut[0].score if EnsemblegrilleHaut[1] else -1,
-        }
-        return max(scores, key=scores.get)
-        
-
-
-
-        
-        
-
-
-
-
-
-
+        return max(scores, key=scores.get) if scores else None
