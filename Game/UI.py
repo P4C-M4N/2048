@@ -1,5 +1,8 @@
+import threading
+import time
 import pygame
 import sys
+import multiprocessing
 from Game import Grille
 from ia import Ia
 
@@ -33,6 +36,7 @@ ecran = pygame.display.set_mode(TAILLE_ECRAN)
 pygame.display.set_caption('2048')
 
 # Créer une instance de Grille
+global grille
 grille = Grille()
 ia = Ia(grille)
 
@@ -79,6 +83,22 @@ def bouton_clique(pos, pos_bouton):
     bx, by, bw, bh = pos_bouton[0], pos_bouton[1], TAILLE_BOUTON[0], TAILLE_BOUTON[1]
     return bx <= x <= bx + bw and by <= y <= by + bh
 
+def test() :
+    global grille
+    if grille.isNotFull():
+        print("IA")
+        move = ia.calculMeilleurCoup()
+        print(move)
+        if grille.TryDeplacement(move):
+            print("mouve")
+            grille.ajoutNombreAleatoire()
+    else :
+        print("Game Over")
+        grille.afficher()
+        print("Score total : ", grille.score)
+        grille = Grille()
+    return grille
+
 # Afficher les boutons initiaux
 dessiner_boutons()
 pygame.display.update()
@@ -86,7 +106,7 @@ pygame.display.update()
 i = 0
 while True:
     i += 1
-    print(i)
+    #print(i)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -126,14 +146,20 @@ while True:
                 mode_IA = None
                 dessiner_boutons()
 
-    # Exécuter l'IA pour faire un mouvement dans un thread séparé
-    if mode_IA is True:
-        print("IA")
-        move = ia.calculMeilleurCoup()
-        print(move)
-        if grille.TryDeplacement(move):
-            print("mouve")
-            grille.ajoutNombreAleatoire()
+
+        
+
+        print("IIIIIIA")
+        # Exécuter l'IA pour faire un mouvement dans un thread séparé
+        if mode_IA is True:
+            print("IIIIIIA",i)
+            grille.afficher()
+            thread = threading.Thread(target=test)
+            print("start")
+            thread.start()
+            thread.join()
+            print("finish")
+            
 
     # Dessiner la grille ou les boutons selon le mode
     if mode_IA is None:
