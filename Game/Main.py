@@ -7,7 +7,7 @@ if __name__ == "__main__":
     grilles = []
 
     # Use tqdm to create a progress bar
-    for i in tqdm(range(10000), desc="Simulation Progress"):
+    for i in tqdm(range(100000), desc="Simulation Progress"):
         game = GameIA()
         game.start()
         scores.append(game.grille.score)
