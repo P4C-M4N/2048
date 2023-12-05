@@ -18,3 +18,14 @@ if __name__ == "__main__":
 
     print("\n#########################################\nMoyenne des scores : ", sum(scores) / len(scores), "\nMeilleur score : ", max(scores), "\nMin score :", min(scores), "\n#########################################")
     grilles[scores.index(max(scores))].afficher()
+
+    #Affichage du nombre de parties gagnées
+    nb_parties_gagnees = 0
+    #rechercher dans chacune des grilles le nombre 2048
+    for grille in grilles:
+        for ligne in grille.grille:
+            if 2048 in ligne:
+                nb_parties_gagnees += 1
+                break
+
+    print("Nombre de parties gagnées : ", nb_parties_gagnees)
