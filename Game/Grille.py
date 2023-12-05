@@ -8,6 +8,8 @@ class Grille:
     
     def __init__(self):
         self.grille = self.grilleVide()
+        self.ajoutNombreAleatoire()
+        self.ajoutNombreAleatoire()
         
     def grilleVide(self):
         grille = [
