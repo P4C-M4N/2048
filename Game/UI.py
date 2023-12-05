@@ -83,8 +83,10 @@ def bouton_clique(pos, pos_bouton):
 dessiner_boutons()
 pygame.display.update()
 
-# Boucle principale du jeu
+i = 0
 while True:
+    i += 1
+    print(i)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -100,35 +102,38 @@ while True:
                     mode_IA = True
                     grille = Grille()  # Réinitialiser la grille
                 elif bouton_clique(event.pos, (*POSITION_BOUTON_ARRET, *TAILLE_BOUTON)):
-                    if mode_IA is None:
-                        pygame.quit()
-                        sys.exit()
-        elif mode_IA:
-            # Exécuter l'IA pour faire un mouvement
-            move = ia.calculMeilleurCoup()
-            if grille.TryDeplacement(move):
-                grille.ajoutNombreAleatoire()
-        else:
-            # Gérer les entrées utilisateur pour le mode manuel
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    grille.TryDeplacement('g')
+                    pygame.quit()
+                    sys.exit()
+
+        # Gérer les entrées utilisateur pour le mode manuel
+        if mode_IA is False and event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                if grille.TryDeplacement('g'):
                     grille.ajoutNombreAleatoire()
-                elif event.key == pygame.K_RIGHT:
-                    grille.TryDeplacement('d')
+            elif event.key == pygame.K_RIGHT:
+                if grille.TryDeplacement('d'):
                     grille.ajoutNombreAleatoire()
-                elif event.key == pygame.K_UP:
-                    grille.TryDeplacement('h')
+            elif event.key == pygame.K_UP:
+                if grille.TryDeplacement('h'):
                     grille.ajoutNombreAleatoire()
-                elif event.key == pygame.K_DOWN:
-                    grille.TryDeplacement('b')
+            elif event.key == pygame.K_DOWN:
+                if grille.TryDeplacement('b'):
                     grille.ajoutNombreAleatoire()
-                
-        if mode_IA is not None and event.type == pygame.MOUSEBUTTONDOWN:
-            # Gérer le clic sur le bouton d'arrêt pendant le jeu
+
+        # Gérer le clic sur le bouton "Quitter" dans tous les modes
+        if event.type == pygame.MOUSEBUTTONDOWN:
             if bouton_clique(event.pos, (*POSITION_BOUTON_ARRET, *TAILLE_BOUTON)):
                 mode_IA = None
                 dessiner_boutons()
+
+    # Exécuter l'IA pour faire un mouvement dans un thread séparé
+    if mode_IA is True:
+        print("IA")
+        move = ia.calculMeilleurCoup()
+        print(move)
+        if grille.TryDeplacement(move):
+            print("mouve")
+            grille.ajoutNombreAleatoire()
 
     # Dessiner la grille ou les boutons selon le mode
     if mode_IA is None:
