@@ -37,8 +37,8 @@ pygame.display.set_caption('2048')
 
 # Créer une instance de Grille
 global grille
-grille = Grille()
-ia = Ia(grille)
+#grille = Grille()
+#ia = Ia(grille)
 
 # Fonction dessiner_boutons
 def dessiner_boutons():
@@ -84,20 +84,26 @@ def bouton_clique(pos, pos_bouton):
     return bx <= x <= bx + bw and by <= y <= by + bh
 
 def test() :
+    dessiner_grille()
+    pygame.display.update()
+    move = None
     global grille
-    if grille.isNotFull():
-        print("IA")
-        move = ia.calculMeilleurCoup()
-        print(move)
-        if grille.TryDeplacement(move):
-            print("mouve")
-            grille.ajoutNombreAleatoire()
-    else :
-        print("Game Over")
-        grille.afficher()
-        print("Score total : ", grille.score)
-        grille = Grille()
-    return grille
+    while grille.isNotFull():
+        time.sleep(0.01)
+        if grille.isNotFull():
+            print("IA")
+            move = ia.calculMeilleurCoup()
+            if grille.TryDeplacement(move):
+                print("mouve")
+                grille.ajoutNombreAleatoire()
+            dessiner_grille()
+            pygame.display.update()
+        else :
+            print("Game Over")
+            print("Score total : ", grille.score)
+            grille = Grille()
+        
+        
 
 # Afficher les boutons initiaux
 dessiner_boutons()
@@ -121,6 +127,7 @@ while True:
                 elif bouton_clique(event.pos, (*POSITION_BOUTON_IA, *TAILLE_BOUTON)):
                     mode_IA = True
                     grille = Grille()  # Réinitialiser la grille
+                    ia = Ia(grille)
                 elif bouton_clique(event.pos, (*POSITION_BOUTON_ARRET, *TAILLE_BOUTON)):
                     pygame.quit()
                     sys.exit()
@@ -153,12 +160,12 @@ while True:
         # Exécuter l'IA pour faire un mouvement dans un thread séparé
         if mode_IA is True:
             print("IIIIIIA",i)
-            grille.afficher()
+            # grille.afficher()
             thread = threading.Thread(target=test)
             print("start")
             thread.start()
-            thread.join()
             print("finish")
+            thread.join()
             
 
     # Dessiner la grille ou les boutons selon le mode
