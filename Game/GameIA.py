@@ -12,15 +12,15 @@ class GameIA:
     
     
     def start(self):
-        print("Jeu du 2048 : ")
-        print("IA Jeux")
-        self.grille.afficher()
+        #print("Jeu du 2048 : ")
+        #print("IA Jeux")
+        #self.grille.afficher()
         while self.grille.isNotFull():
             move = self.ia.calculMeilleurCoup()
-            print(move)
+            #print(move)
             if self.grille.TryDeplacement(move):
                 self.grille.ajoutNombreAleatoire()
-                self.grille.afficher()
-        print("Game Over")
-        self.grille.afficher()
-        print("Score total : ", self.grille.score)
+                #self.grille.afficher()
+        #print("Game Over")
+        #self.grille.afficher()
+        #print("Score total : ", self.grille.score)

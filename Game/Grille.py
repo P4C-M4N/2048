@@ -85,9 +85,9 @@ class Grille:
         
         
     def TryDeplacement(self, move):
-        print("Mouvement envisagé :", move)
+        #print("Mouvement envisagé :", move)
         if self.deplacementAutorise(move):
-            print("mouvement ok")
+            #print("mouvement ok")
             if move == 'g':
                 self.deplacementGauche()
             elif move == 'd':
@@ -98,7 +98,7 @@ class Grille:
                 self.deplacementBas()
             return True
         else :
-            print("mouvement interdit")  
+            #print("mouvement interdit")  
             return False
     
     def deplacementAutorise(self, move):
