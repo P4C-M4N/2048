@@ -6,12 +6,14 @@ if __name__ == "__main__":
     scores = []
     grilles = []
 
+    game = Game()
+    game.start()
     # Use tqdm to create a progress bar
-    for i in tqdm(range(100000), desc="Simulation Progress"):
-        game = GameIA()
-        game.start()
-        scores.append(game.grille.score)
-        grilles.append(game.grille)
+    # for i in tqdm(range(100000), desc="Simulation Progress"):
+    #     game = GameIA()
+    #     game.start()
+    #     scores.append(game.grille.score)
+    #     grilles.append(game.grille)
 
-    print("\n#########################################\nMoyenne des scores : ", sum(scores)/len(scores), "\nMeilleur score : ", max(scores), "\nMin score :", min(scores), "\n#########################################")
-    grilles[scores.index(max(scores))].afficher()
+    # print("\n#########################################\nMoyenne des scores : ", sum(scores)/len(scores), "\nMeilleur score : ", max(scores), "\nMin score :", min(scores), "\n#########################################")
+    # grilles[scores.index(max(scores))].afficher()

@@ -14,7 +14,7 @@ class GameIA:
         #print("IA Jeux")
         #self.grille.afficher()
         while self.grille.isNotFull():
-            print(self.grille.isNotFull())
+            #print(self.grille.isNotFull())
             move = self.ia.calculMeilleurCoup()
             #print(move)
             if self.grille.TryDeplacement(move):

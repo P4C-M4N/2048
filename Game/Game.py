@@ -5,10 +5,6 @@ from Grille import Grille
 class Game:
     grille = Grille()
     
-    def __init__(self):
-        self.grille.ajoutNombreAleatoire()
-        self.grille.ajoutNombreAleatoire()
-    
     
     def start(self):
         print("Jeu du 2048 : ")
