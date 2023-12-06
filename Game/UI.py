@@ -30,6 +30,7 @@ COULEUR_BOUTON = (100, 100, 100)
 COULEUR_TEXTE = (255, 255, 255)
 
 mode_IA = None  # Pour gérer le mode de jeu
+thread = None  # Pour gérer l'IA
 
 # Créer une fenêtre
 ecran = pygame.display.set_mode(TAILLE_ECRAN)
@@ -89,36 +90,20 @@ def test() :
     move = None
     global grille
     global ia
-    restrart = True
-    while restrart :
-        #time.sleep(0.0000001)
-        if grille.isNotFull():
-            print("IA")
-            move = ia.calculMeilleurCoup()
-            if grille.TryDeplacement(move):
-                print("mouve")
-                grille.ajoutNombreAleatoire()
-            dessiner_grille()
-            pygame.display.update()
-            #S'il la grille contient un 1024 on écrir la grille dans un fichier
-            #D'abord on recherche si la grille contient un 1024
-            for i in range(4):
-                for j in range(4):
-                    if grille.grille[i][j] == 4096:
-                        #On ouvre le fichier en mode append
-                        fichier = open("grille.txt", "a")
-                        #On écrit la grille dans le fichier
-                        fichier.write(str(grille.grille))
-                        #On ferme le fichier
-                        fichier.close()
-                        restrart = False
-        else :
-            print("Game Over")
-            print("Score total : ", grille.score)
-            grille = Grille()
-            ia = Ia(grille)
-            dessiner_grille()
-            pygame.display.update()
+    while  grille.isNotFull() :
+        print("IA")
+        move = ia.calculMeilleurCoup()
+        if grille.TryDeplacement(move):
+            print("mouve")
+            grille.ajoutNombreAleatoire()
+        dessiner_grille()
+        pygame.display.update()
+    print("Game Over")
+    print("Score total : ", grille.score)
+    grille = Grille()
+    ia = Ia(grille)
+    dessiner_grille()
+    pygame.display.update()
         
         
 
@@ -171,12 +156,8 @@ while True:
                 dessiner_boutons()
 
 
-        
-
-        print("IIIIIIA")
         # Exécuter l'IA pour faire un mouvement dans un thread séparé
-        if mode_IA is True:
-            print("IIIIIIA",i)
+        if mode_IA is True and thread is None:
             # grille.afficher()
             thread = threading.Thread(target=test)
             print("start")

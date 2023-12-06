@@ -8,7 +8,7 @@ def jouer_partie(_):
     return game.grille.score, game.grille
 
 if __name__ == "__main__":
-    nb_parties = 100
+    nb_parties = 300
 
     with ProcessPoolExecutor() as executor:
         resultats = list(tqdm(executor.map(jouer_partie, range(nb_parties)), total=nb_parties, desc="Simulation Progress"))

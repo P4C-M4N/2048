@@ -69,7 +69,7 @@ class Ia:
             scoreBase = grille.score
             scoreEvaluation = self.evaluationGrille(grille.grille)
             pointsCoin = self.pointsPourCoin(grille.grille)
-            scoreProfondeur = self.calculMeilleurCoupProfondeur(grille, 2)
+            scoreProfondeur = self.calculMeilleurCoupProfondeur(grille, 3)
             pointsCaseVide = self.pointsPourCasesVides(grille.grille)
             scoreTotal = scoreBase + scoreEvaluation + pointsCoin + scoreProfondeur + pointsCaseVide
             scores[direction] = scoreTotal
