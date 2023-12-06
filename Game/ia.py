@@ -1,9 +1,9 @@
-from concurrent.futures import ProcessPoolExecutor, as_completed
 import random
 import copy
 import neat
 from Grille import Grille
-
+from neat.parallel import ParallelEvaluator
+from neat import StdOutReporter, StatisticsReporter
 
 def CoupPossible(grille):
         dirf = []
@@ -15,44 +15,30 @@ def CoupPossible(grille):
                 dirf.append(direction)
         while len(dirf) < 4 :
             dirf.append(dirf[0])
-        
-        return dirf
-            
 
-def eval_genome(genome_id, genome, config):
+        return dirf
+
+def eval_genome(genome, config):
     net = neat.nn.FeedForwardNetwork.create(genome, config)
     grille = Grille()
     while grille.isNotFull():
+        #if genome.fitness < -100:
+        #    break
         grid_flat = [item for sublist in grille.grille for item in sublist]
+        # move is max index of output
         output = net.activate(grid_flat)
         move = CoupPossible(grille)[output.index(max(output))]
         grille.TryDeplacement(move)
         grille.ajoutNombreAleatoire()
-    
+
+    bestCase = grille.bestCase()
+    print(f"Score: {grille.score}, BestCase: {bestCase}")
     grille.ajoutNombreAleatoire()
-    return genome_id, grille.score, grille
+    return grille.score  # Renvoie le score comme fitness
 
-def parallel_eval_genomes(genomes, config):
-    # Créer un dictionnaire pour mapper les id de génome aux objets génome
-    genome_dict = {genome_id: genome for genome_id, genome in genomes}
-
-    with ProcessPoolExecutor() as executor:
-        # Soumettre les tâches
-        futures = {executor.submit(eval_genome, genome_id, genome, config): genome_id for genome_id, genome in genomes}
-
-        for future in as_completed(futures):
-            # Obtenir l'id du génome à partir de la future
-            genome_id = futures[future]
-            score, _, grille = future.result()
-
-            # Mettre à jour le fitness du génome
-            genome_dict[genome_id].fitness = score
-
-            # Affichage des résultats
-            print(f'Genome ID: {genome_id} ; Fitness: {score}; best case : {grille.bestCase()}')
-            grille.afficher()
-            
-
+def print_generation_info(population):
+    print(f"Generation: {population.generation}")
+    print(f"Meilleur fitness de cette génération: {max([c.fitness for c in population.population.values()])}")
 
 if __name__ == "__main__":
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
@@ -60,11 +46,17 @@ if __name__ == "__main__":
                          'config-feedforward.txt')
 
     p = neat.Population(config)
-    p.add_reporter(neat.StdOutReporter(True))
-    stats = neat.StatisticsReporter()
-    p.add_reporter(stats)
-    
-    p.run(parallel_eval_genomes, 100000)
 
-    winner = p.best_genome
-    print("\nBest Genome:\n{!s}".format(winner))
+    # Ajoutez StdOutReporter pour des informations de base
+    p.add_reporter(StdOutReporter(True))
+
+    # Ajoutez StatisticsReporter pour des statistiques détaillées
+    stats = StatisticsReporter()
+    p.add_reporter(stats)
+
+    # Utilisez ParallelEvaluator pour l'évaluation parallèle
+    pe = ParallelEvaluator(10, eval_genome)
+    winner = p.run(pe.evaluate, 100000)
+
+    # Affichez les statistiques à la fin de l'exécution
+    print(stats)
