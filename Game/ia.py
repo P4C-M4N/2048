@@ -4,6 +4,20 @@ import copy
 import neat
 
 
+def CoupPossible(grille):
+        dirf = []
+        for direction in ['d', 'g', 'b', 'h']:
+            grilleCopie = Grille()
+            grilleCopie.grille = copy.deepcopy(grille.grille)
+            grilleCopie.score = copy.deepcopy(grille.score)
+            if grilleCopie.TryDeplacement(direction):
+                dirf.append(direction)
+        while len(dirf) < 4 :
+            dirf.append(dirf[0])
+        
+        return dirf
+            
+
 def eval_genomes(genomes, config):
     scores = []
     end_grille = []
@@ -17,19 +31,10 @@ def eval_genomes(genomes, config):
             grid_flat = [item for sublist in grille.grille for item in sublist]
             # move is max index of output
             output = net.activate(grid_flat)
-            move = ['g', 'h', 'd', 'b'][output.index(max(output))]
-
-            if grille.TryDeplacement(move):
-                genome.fitness += 20
-
-
-                grille.ajoutNombreAleatoire()
-            else:
-                genome.fitness -= 50
-                # play a random move
-                move = random.choice(['g', 'h', 'd', 'b'])
-                grille.TryDeplacement(move)
-                grille.ajoutNombreAleatoire()
+            move = CoupPossible(grille)[output.index(max(output))]
+            grille.TryDeplacement(move)
+            grille.ajoutNombreAleatoire()
+            
         grille.ajoutNombreAleatoire()
         end_grille.append(grille)
         genome.fitness = genome.fitness + grille.score
