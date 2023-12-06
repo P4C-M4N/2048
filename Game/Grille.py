@@ -120,6 +120,8 @@ class Grille:
 
         return grilleTempo.grille != self.grille  
 
+    def bestCase(self):
+        return max([item for sublist in self.grille for item in sublist])
     
     def isNotFull(self):
        return (self.deplacementAutorise('g') or self.deplacementAutorise('d') or self.deplacementAutorise('h') or self.deplacementAutorise('b'))

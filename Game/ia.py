@@ -49,8 +49,9 @@ def parallel_eval_genomes(genomes, config):
             genome_dict[genome_id].fitness = score
 
             # Affichage des résultats
-            print(f'Genome ID: {genome_id} ; Fitness: {score}')
+            print(f'Genome ID: {genome_id} ; Fitness: {score}; best case : {grille.bestCase()}')
             grille.afficher()
+            
 
 
 if __name__ == "__main__":
