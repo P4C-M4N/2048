@@ -6,6 +6,7 @@ class Ia:
         self.grille = grille
 
     def pointsPourCasesVides(self, grille):
+        # Encourage a additionner un max de tuiles
         casesVides = sum(1 for ligne in grille for case in ligne if case == 0)
         return casesVides * 10
 
@@ -50,6 +51,7 @@ class Ia:
 
         return max(meilleursScores) if meilleursScores else -1
 
+
     def calculMeilleurCoup(self):
         grilles = {}
         for direction in ['d', 'g', 'b', 'h']:
@@ -67,7 +69,7 @@ class Ia:
             scoreBase = grille.score
             scoreEvaluation = self.evaluationGrille(grille.grille)
             pointsCoin = self.pointsPourCoin(grille.grille)
-            scoreProfondeur = self.calculMeilleurCoupProfondeur(grille, 2)
+            scoreProfondeur = self.calculMeilleurCoupProfondeur(grille, 3)
             pointsCaseVide = self.pointsPourCasesVides(grille.grille)
             scoreTotal = scoreBase + scoreEvaluation + pointsCoin + scoreProfondeur + pointsCaseVide
             scores[direction] = scoreTotal
