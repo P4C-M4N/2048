@@ -15,4 +15,6 @@ RUN pip install -r requirements.txt
 WORKDIR /Game
 
 #Tail for infinite loop
-CMD tail -f /dev/null
+#CMD tail -f /dev/null
+
+CMD [ "python", "Main.py", "200000"]
