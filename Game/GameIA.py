@@ -1,5 +1,5 @@
 from Grille import Grille
-from ia import Ia
+from ia_new import Ia
 
 class GameIA:
     grille = Grille()
@@ -10,16 +10,16 @@ class GameIA:
     
     
     def start(self):
-        #print("Jeu du 2048 : ")
-        #print("IA Jeux")
-        #self.grille.afficher()
+        print("Jeu du 2048 : ")
+        print("IA Jeux")
+        self.grille.afficher()
         while self.grille.isNotFull():
             #print(self.grille.isNotFull())
             move = self.ia.calculMeilleurCoup()
             #print(move)
             if self.grille.TryDeplacement(move):
                 self.grille.ajoutNombreAleatoire()
-                #self.grille.afficher()
-        #print("Game Over")
-        #self.grille.afficher()
-        #print("Score total : ", self.grille.score)
+                self.grille.afficher()
+        print("Game Over")
+        self.grille.afficher()
+        print("Score total : ", self.grille.score)

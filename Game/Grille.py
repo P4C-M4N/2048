@@ -5,9 +5,11 @@ class Grille:
     
     grille = []
     score = 0
+    grilleOld = []
     
     def __init__(self):
         self.grille = self.grilleVide()
+        self.grilleOld
         self.ajoutNombreAleatoire()
         self.ajoutNombreAleatoire()
         
@@ -87,6 +89,8 @@ class Grille:
         
         
     def TryDeplacement(self, move):
+        #Save the old grid
+        self.grilleOld = copy.deepcopy(self.grille)
         #print("Mouvement envisagé :", move)
         if self.deplacementAutorise(move):
             #print("mouvement ok")
@@ -119,7 +123,28 @@ class Grille:
             return False
 
         return grilleTempo.grille != self.grille  
-
     
+    def getPlusGrandNombre(self):
+        return max(max(self.grille))
+    
+    def getAncienPlusGrandNombre(self):
+        return max(max(self.grilleOld))
+    
+    def getPlacePlusGrandNombre(self):
+        list_place = []
+        for i in range(4):
+            for j in range(4):
+                if self.grille[i][j] == self.getPlusGrandNombre():
+                    list_place.append([i, j])
+        return list_place
+
+    def getPlaceAncienPlusGrandNombre(self):
+        list_place = []
+        for i in range(4):
+            for j in range(4):
+                if self.grilleOld[i][j] == self.getAncienPlusGrandNombre():
+                    list_place.append([i, j])
+        return list_place
+
     def isNotFull(self):
        return (self.deplacementAutorise('g') or self.deplacementAutorise('d') or self.deplacementAutorise('h') or self.deplacementAutorise('b'))
