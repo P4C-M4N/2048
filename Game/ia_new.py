@@ -6,7 +6,7 @@ from numpy import average
 
 #coef
 COEF_FIRST_CORNER_CASE = 200
-COEF_BIGGER_MOVE_TO_CORNER_CASE = 200
+COEF_BIGGER_MOVE_TO_CORNER_CASE = 400
 COEF_SAME_BIGGER_CORNER_CASE = 200
 COEF_NOT_SAME_BIGGER_CORNER_CASE = 25
 COEF_EMPTY_CASES = 5
@@ -60,29 +60,24 @@ class Ia:
     This method return a bigger score to prioritize to have a big number in the corner.
     """
     def point_for_corner(self, grille: Grille):
-        # if the gris as not old grid we return the score of the left up corner
-        if not grille.grilleOld :
+        if not grille.grilleOld:
             return max(grille.grille[0][0], grille.grille[3][3], grille.grille[0][3], grille.grille[3][0]) * COEF_FIRST_CORNER_CASE
-        
-        #Get the place of the bigger number of the older grid
-        list_place_olde_bigger_number = grille.getPlaceAncienPlusGrandNombre()
 
-        #Get the place of the bigger number of the grid
+        list_place_olde_bigger_number = grille.getPlaceAncienPlusGrandNombre()
         list_place_bigger_number = grille.getPlacePlusGrandNombre()
 
-        for place in list_place_bigger_number :
-            for place_olde in list_place_olde_bigger_number :
-                #If the new and the old bigger number are in the same place we return a bigger score
-                if place == place_olde and place in [[0, 0], [3, 3], [0, 3], [3, 0]] :
+        for place in list_place_bigger_number:
+            for place_olde in list_place_olde_bigger_number:
+                if place == place_olde and place in [[0, 0], [3, 3], [0, 3], [3, 0]]:
                     return grille.grille[place[0]][place[1]] * COEF_SAME_BIGGER_CORNER_CASE
-                
-        for place in list_place_bigger_number :
-            for place_olde in list_place_olde_bigger_number :
-                if place in [[0, 0], [3, 3], [0, 3], [3, 0]] :
-                    #If the new bigger number is in the corner we return a bigger score
-                    return grille.grille[place[0]][place[1]] * COEF_BIGGER_MOVE_TO_CORNER_CASE
-                
+
+        for place in list_place_bigger_number:
+            if place in [[0, 0], [3, 3], [0, 3], [3, 0]]:
+                return grille.grille[place[0]][place[1]] * COEF_BIGGER_MOVE_TO_CORNER_CASE
+
         return -1000000
+
+
     """
     This methode return a bigger score to prioritize to have more empty cases.
     """

@@ -9,7 +9,7 @@ class Grille:
     
     def __init__(self):
         self.grille = self.grilleVide()
-        self.grilleOld
+        self.grilleOld = None
         self.ajoutNombreAleatoire()
         self.ajoutNombreAleatoire()
         
@@ -89,11 +89,11 @@ class Grille:
         
         
     def TryDeplacement(self, move):
-        #Save the old grid
+        # Save the old grid before making any moves
         self.grilleOld = copy.deepcopy(self.grille)
-        #print("Mouvement envisagé :", move)
+
         if self.deplacementAutorise(move):
-            #print("mouvement ok")
+            # Move is authorized, update the grid
             if move == 'g':
                 self.deplacementGauche()
             elif move == 'd':
@@ -103,8 +103,7 @@ class Grille:
             elif move == 'b':
                 self.deplacementBas()
             return True
-        else :
-            #print("mouvement interdit")  
+        else:
             return False
     
     def deplacementAutorise(self, move):
