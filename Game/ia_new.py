@@ -1,8 +1,8 @@
 import math
+import time
 from Grille import Grille
 import copy
 from numpy import average
-
 
 #coef
 COEF_FIRST_CORNER_CASE = 200
@@ -55,73 +55,69 @@ class Ia:
             best_move, _ = max(sub_moves, key=lambda x: x[1])
             print(best_move)
             return best_move
-            
-    """
-    This method return a bigger score to prioritize to have a big number in the corner.
-    """
-    def point_for_corner(self, grille: Grille):
-        if not grille.grilleOld:
-            return max(grille.grille[0][0], grille.grille[3][3], grille.grille[0][3], grille.grille[3][0]) * COEF_FIRST_CORNER_CASE
 
-        list_place_olde_bigger_number = grille.getPlaceAncienPlusGrandNombre()
-        list_place_bigger_number = grille.getPlacePlusGrandNombre()
+    def smoothness(self, grille: Grille):
+        smoothness_score = 0
+        for i in range(4):
+            for j in range(4):
+                if grille.grille[i][j] != 0:
+                    # Value of the current tile
+                    current_value = math.log(grille.grille[i][j], 2)
 
-        for place in list_place_bigger_number:
-            for place_olde in list_place_olde_bigger_number:
-                if place == place_olde and place in [[0, 0], [3, 3], [0, 3], [3, 0]]:
-                    return grille.grille[place[0]][place[1]] * COEF_SAME_BIGGER_CORNER_CASE
+                    # Check right neighbor
+                    for k in range(j + 1, 4):
+                        if grille.grille[i][k] != 0:
+                            right_value = math.log(grille.grille[i][k], 2)
+                            smoothness_score -= abs(current_value - right_value)
+                            break  # Break after finding the first non-zero right neighbor
 
-        for place in list_place_bigger_number:
-            if place in [[0, 0], [3, 3], [0, 3], [3, 0]]:
-                return grille.grille[place[0]][place[1]] * COEF_BIGGER_MOVE_TO_CORNER_CASE
+                    # Check downward neighbor
+                    for k in range(i + 1, 4):
+                        if grille.grille[k][j] != 0:
+                            down_value = math.log(grille.grille[k][j], 2)
+                            smoothness_score -= abs(current_value - down_value)
+                            break  # Break after finding the first non-zero downward neighbor
 
-        return -1000000
-
-
-    """
-    This methode return a bigger score to prioritize to have more empty cases.
-    """
-    def pointsPourCasesVides(self, grille):
-        #Get the number of empty cases
-        emptyCases = sum(1 for ligne in grille.grille for case in ligne if case == 0)
-
-        return emptyCases * COEF_EMPTY_CASES
-    
-    """
-    This method return a rotated array of 90 degrees.
-    """
-    @staticmethod
-    def rotate_clockwise(arr, iteration=1):
-        n = len(arr)
-        for _ in range(iteration):
-            for x in range(n // 2):
-                for y in range(x, n - x - 1):
-                    temp = arr[x][y]
-                    arr[x][y] = arr[n - y - 1][x]
-                    arr[n - y - 1][x] = arr[n - x - 1][n - y - 1]
-                    arr[n - x - 1][n - y - 1] = arr[y][n - x - 1]
-                    arr[y][n - x - 1] = temp
-        return arr
-
-    def smoothness(self, grille):
-        board = copy.deepcopy(grille.grille)
-        smoothness = 0
-        # Only rotate twice to avoid double counting
-        # Ignore 0 tiles
-        for rotation in range(2):
-            for i in range(0, len(board)):
-                for j in range(0, len(board[i])):
-                    if board[i][j] != 0 and j + 1 < len(board[i]) and board[i][j + 1] != 0:
-                        current_smoothness = math.fabs(math.log2(board[i][j]) - math.log2(board[i][j + 1]))
-                        smoothness = smoothness - current_smoothness
-            self.rotate_clockwise(board)
-        return smoothness
+        return smoothness_score
         
+    def monotonicity(self, grille: Grille):
+        monotonicity = 0
+        for i in range(4):
+            for j in range(3):
+                if grille.grille[i][j] > grille.grille[i][j + 1]:
+                    monotonicity += grille.grille[i][j] - grille.grille[i][j + 1]
+                else:
+                    monotonicity += grille.grille[i][j + 1] - grille.grille[i][j]
 
+                if grille.grille[j][i] > grille.grille[j + 1][i]:
+                    monotonicity += grille.grille[j][i] - grille.grille[j + 1][i]
+                else:
+                    monotonicity += grille.grille[j + 1][i] - grille.grille[j][i]
+
+        return monotonicity
             
+    def free_tiles(self, grille: Grille):
+        free = 0
+        for i in range(4):
+            for j in range(4):
+                if grille.grille[i][j] == 0:
+                    free += 1
+        return free
 
     def score_grille(self, grille):
-        score = self.point_for_corner(grille)
+        smoothness_score = self.smoothness(grille)
+        monotonicity_score = self.monotonicity(grille)
+        free_tiles_score = self.free_tiles(grille)
+
+        # Assign weights to each heuristic based on their importance
+        smoothness_weight = 0.1
+        monotonicity_weight = 1.0
+        free_tiles_weight = 2.5
+
+        score = (smoothness_score * smoothness_weight +
+                 monotonicity_score * monotonicity_weight +
+                 free_tiles_score * free_tiles_weight)
+
         return score
         
     """

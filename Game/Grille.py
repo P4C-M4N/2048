@@ -126,6 +126,14 @@ class Grille:
     def getPlusGrandNombre(self):
         return max(max(self.grille))
     
+    def getPlusGrandNombreEmplacement(self):
+        list_place = []
+        for i in range(4):
+            for j in range(4):
+                if self.grille[i][j] == self.getPlusGrandNombre():
+                    list_place.append([i, j])
+        return list_place
+    
     def getAncienPlusGrandNombre(self):
         return max(max(self.grilleOld))
     
